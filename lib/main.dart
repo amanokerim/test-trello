@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:testtrello/presentation/screens/home_screen.dart';
+import 'package:testtrello/presentation/const.dart';
+import 'package:testtrello/presentation/screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,11 +14,10 @@ class MyApp extends StatelessWidget {
       title: 'Trello Test',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
         brightness: Brightness.dark,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: LoginScreen(),
     );
   }
 }
