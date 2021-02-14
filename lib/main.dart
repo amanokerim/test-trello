@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:testtrello/logic/cubit/auth_cubit.dart';
-import 'package:testtrello/presentation/screens/login_screen.dart';
+import 'package:testtrello/cubit/trello_cubit.dart';
+import 'package:testtrello/screens/main_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthCubit(),
+      create: (context) => TrelloCubit(),
       child: MaterialApp(
         title: 'Trello Test',
         debugShowCheckedModeBanner: false,
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
             bodyText2: TextStyle(fontSize: 18.0),
           ),
         ),
-        home: LoginScreen(),
+        home: MainScreen(),
       ),
     );
   }

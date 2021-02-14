@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:testtrello/logic/cubit/auth_cubit.dart';
-import 'package:testtrello/presentation/const.dart';
-import '../../data/models/trello_card.dart';
+import 'package:testtrello/cubit/trello_cubit.dart';
+import 'package:testtrello/const.dart';
+import '../data/models/trello_card.dart';
 
-class LoginScreen extends StatefulWidget {
+class MainScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _MainScreenState extends State<MainScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _usernameKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
 
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
-      child: BlocBuilder<AuthCubit, TrelloState>(
+      child: BlocBuilder<TrelloCubit, TrelloState>(
         builder: (context, state) => Scaffold(
           appBar: AppBar(
             actions: [
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? IconButton(
                       icon: Icon(Icons.logout),
                       onPressed: () =>
-                          BlocProvider.of<AuthCubit>(context).logout(),
+                          BlocProvider.of<TrelloCubit>(context).logout(),
                     )
                   : Container(),
             ],
@@ -41,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (state is TrelloLogin)
                   return _buildLoginForm(context);
                 else if (state is TrelloLoginError)
-                  return Center(child: Text("Error"));
+                  return _buildTrelloLoginError(state, context);
                 else if (state is TrelloShowCards) {
                   return _buildCardTab(state);
                 }
@@ -51,6 +52,19 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Column _buildTrelloLoginError(TrelloLoginError state, BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 20.0),
+        Text(
+          state.errorText ?? "",
+          style: TextStyle(color: Colors.red),
+        ),
+        _buildLoginForm(context),
+      ],
     );
   }
 
@@ -93,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Form _buildLoginForm(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           SizedBox(height: 30.0),
@@ -108,8 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   GestureDetector _buildLoginButton(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          BlocProvider.of<AuthCubit>(context).login(_username, _password),
+      onTap: () {
+        if (_formKey.currentState.validate())
+          BlocProvider.of<TrelloCubit>(context).login(_username, _password);
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(

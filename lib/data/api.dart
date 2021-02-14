@@ -8,6 +8,9 @@ class TrelloApi {
   TrelloApi() {
     _dio = Dio();
     _dio.options.baseUrl = "https://trello.backend.tests.nekidaem.ru/api/v1";
+    _dio.options.connectTimeout = 5000;
+    _dio.options.receiveTimeout = 5000;
+    _dio.options.sendTimeout = 5000;
   }
 
   Future<String> login(String username, String password) async {
@@ -18,9 +21,13 @@ class TrelloApi {
         "/users/login/",
         data: formData,
       );
+      print(_response.statusCode);
       return _response.data["token"];
-    } catch (e) {
-      throw e.response.data["non_field_errors"][0];
+    } on DioError catch (e) {
+      // wrong credentials
+      if (e.type == DioErrorType.RESPONSE)
+        throw e.response.data["non_field_errors"][0];
+      throw "Check your connection";
     }
   }
 
@@ -32,8 +39,7 @@ class TrelloApi {
           .map<TrelloCard>((json) => TrelloCard.fromJson(json))
           .toList();
     } catch (e) {
-      print(e);
-      throw Exception();
+      throw "Check your connection";
     }
   }
 }

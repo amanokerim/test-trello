@@ -1,4 +1,4 @@
-part of 'auth_cubit.dart';
+part of 'trello_cubit.dart';
 
 abstract class TrelloState extends Equatable {
   const TrelloState();
@@ -10,7 +10,8 @@ abstract class TrelloState extends Equatable {
 class TrelloLogin extends TrelloState {}
 
 class TrelloLoginError extends TrelloState {
-  // final String errorText;
+  final String errorText;
+  TrelloLoginError(this.errorText);
 }
 
 class TrelloLoading extends TrelloState {}
