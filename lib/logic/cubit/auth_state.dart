@@ -1,23 +1,22 @@
 part of 'auth_cubit.dart';
 
-abstract class AuthState extends Equatable {
-  const AuthState();
+abstract class TrelloState extends Equatable {
+  const TrelloState();
 
   @override
   List<Object> get props => [];
 }
 
-class AuthInitial extends AuthState {}
+class TrelloLogin extends TrelloState {}
 
-class AuthComplete extends AuthState {
-  final String token;
-  AuthComplete(this.token);
-}
-
-class AuthError extends AuthState {
+class TrelloLoginError extends TrelloState {
   // final String errorText;
 }
 
-class AuthLoading extends AuthState {}
+class TrelloLoading extends TrelloState {}
 
-class AuthSuccess extends AuthState {}
+class TrelloShowCards extends TrelloState {
+  final List<TrelloCard> cards;
+  final int row;
+  TrelloShowCards(this.row, this.cards);
+}

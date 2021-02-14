@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:testtrello/logic/cubit/auth_cubit.dart';
 import 'package:testtrello/presentation/const.dart';
+import '../../data/models/trello_card.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,9 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          BlocBuilder<AuthCubit, AuthState>(
+          BlocBuilder<AuthCubit, TrelloState>(
             builder: (context, state) {
-              if (state is AuthSuccess)
+              if (state is TrelloShowCards)
                 return IconButton(icon: Icon(Icons.logout), onPressed: () {});
               return Container();
             },
@@ -31,14 +32,37 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: BlocBuilder<AuthCubit, AuthState>(
+        child: BlocBuilder<AuthCubit, TrelloState>(
           builder: (context, state) {
-            if (state is AuthInitial)
+            if (state is TrelloLogin)
               return _buildLoginForm(context);
-            else if (state is AuthError)
+            else if (state is TrelloLoginError)
               return Center(child: Text("Error"));
-            else if (state is AuthSuccess)
-              return Center(child: Text("Success"));
+            else if (state is TrelloShowCards)
+              return ListView.builder(
+                  itemCount: state.cards.length,
+                  itemBuilder: (BuildContext context, int i) {
+                    TrelloCard card = state.cards[i];
+                    return Container(
+                      color: Theme.of(context).backgroundColor,
+                      margin: EdgeInsets.only(bottom: 16.0),
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "ID: ${card.id}",
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
+                          SizedBox(height: 5.0),
+                          Text(
+                            card.text,
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ],
+                      ),
+                    );
+                  });
             return Center(child: CircularProgressIndicator());
           },
         ),

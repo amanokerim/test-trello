@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:testtrello/data/models/trello_card.dart';
 
 class TrelloApi {
   Dio _dio;
@@ -23,13 +24,16 @@ class TrelloApi {
     }
   }
 
-  getCards(String token) async {
+  Future<List<TrelloCard>> getCards(String token) async {
     try {
       Options options = Options(headers: {"Authorization": "JWT $token"});
       _response = await _dio.get("/cards/", options: options);
-      print(_response);
+      return _response.data
+          .map<TrelloCard>((json) => TrelloCard.fromJson(json))
+          .toList();
     } catch (e) {
-      print(e.response.data);
+      print(e);
+      throw Exception();
     }
   }
 }

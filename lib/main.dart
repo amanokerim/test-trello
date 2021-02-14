@@ -19,6 +19,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           brightness: Brightness.dark,
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          textTheme: TextTheme(
+            bodyText2: TextStyle(fontSize: 18.0),
+          ),
         ),
         home: LoginScreen(),
       ),
