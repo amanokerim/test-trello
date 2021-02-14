@@ -21,3 +21,10 @@ InputDecoration myLoginDecoration = InputDecoration(
   ),
   contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
 );
+
+const List<String> TABS = [
+  "On hold",
+  "In progress",
+  "Needs review",
+  "Approved",
+];

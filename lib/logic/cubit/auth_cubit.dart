@@ -12,18 +12,26 @@ class AuthCubit extends Cubit<TrelloState> {
 
   AuthCubit() : super(TrelloLogin());
 
-  load(String username, String password) async {
+  login(String username, String password) async {
     emit(TrelloLoading());
 
     try {
       _token = await _api.login(
           "armada", "FSH6zBZ0p9yH"); //login(username, password);
-      List<TrelloCard> cards = await _api.getCards(_token);
+      List<TrelloCard> res = await _api.getCards(_token);
 
+      List<List<TrelloCard>> cards = [];
+      for (int tab = 0; tab < 4; tab++)
+        cards.add(res.where((card) => card.row == tab).toList());
       emit(TrelloShowCards(0, cards));
     } catch (e) {
       print(e);
       emit(TrelloLoginError());
     }
+  }
+
+  logout() {
+    _token = "";
+    emit(TrelloLogin());
   }
 }

@@ -16,7 +16,7 @@ class TrelloLoginError extends TrelloState {
 class TrelloLoading extends TrelloState {}
 
 class TrelloShowCards extends TrelloState {
-  final List<TrelloCard> cards;
+  final List<List<TrelloCard>> cards;
   final int row;
   TrelloShowCards(this.row, this.cards);
 }

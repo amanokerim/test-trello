@@ -17,57 +17,78 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          BlocBuilder<AuthCubit, TrelloState>(
-            builder: (context, state) {
-              if (state is TrelloShowCards)
-                return IconButton(icon: Icon(Icons.logout), onPressed: () {});
-              return Container();
-            },
-          )
-        ],
-        title: Text("Kanban"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: BlocBuilder<AuthCubit, TrelloState>(
-          builder: (context, state) {
-            if (state is TrelloLogin)
-              return _buildLoginForm(context);
-            else if (state is TrelloLoginError)
-              return Center(child: Text("Error"));
-            else if (state is TrelloShowCards)
-              return ListView.builder(
-                  itemCount: state.cards.length,
-                  itemBuilder: (BuildContext context, int i) {
-                    TrelloCard card = state.cards[i];
-                    return Container(
-                      color: Theme.of(context).backgroundColor,
-                      margin: EdgeInsets.only(bottom: 16.0),
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "ID: ${card.id}",
-                            style: Theme.of(context).textTheme.subtitle2,
-                          ),
-                          SizedBox(height: 5.0),
-                          Text(
-                            card.text,
-                            style: Theme.of(context).textTheme.bodyText2,
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-            return Center(child: CircularProgressIndicator());
-          },
+    return DefaultTabController(
+      length: 4,
+      child: BlocBuilder<AuthCubit, TrelloState>(
+        builder: (context, state) => Scaffold(
+          appBar: AppBar(
+            actions: [
+              state is TrelloShowCards
+                  ? IconButton(
+                      icon: Icon(Icons.logout),
+                      onPressed: () =>
+                          BlocProvider.of<AuthCubit>(context).logout(),
+                    )
+                  : Container(),
+            ],
+            title: Text("Kanban"),
+            bottom: state is TrelloShowCards ? _buildTabBar() : null,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Builder(
+              builder: (context) {
+                if (state is TrelloLogin)
+                  return _buildLoginForm(context);
+                else if (state is TrelloLoginError)
+                  return Center(child: Text("Error"));
+                else if (state is TrelloShowCards) {
+                  return _buildCardTab(state);
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  TabBar _buildTabBar() {
+    return TabBar(
+      isScrollable: true,
+      tabs: [for (int i = 0; i < 4; i++) Tab(child: Text(TABS[i]))],
+    );
+  }
+
+  TabBarView _buildCardTab(TrelloShowCards state) {
+    return TabBarView(children: [
+      for (int tab = 0; tab < 4; tab++)
+        ListView.builder(
+            itemCount: state.cards[tab].length,
+            itemBuilder: (BuildContext context, int index) {
+              TrelloCard card = state.cards[tab][index];
+              return Container(
+                color: Theme.of(context).backgroundColor,
+                margin: EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "ID: ${card.id}",
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                    SizedBox(height: 5.0),
+                    Text(
+                      card.text,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  ],
+                ),
+              );
+            })
+    ]);
   }
 
   Form _buildLoginForm(BuildContext context) {
@@ -88,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
   GestureDetector _buildLoginButton(BuildContext context) {
     return GestureDetector(
       onTap: () =>
-          BlocProvider.of<AuthCubit>(context).load(_username, _password),
+          BlocProvider.of<AuthCubit>(context).login(_username, _password),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(
